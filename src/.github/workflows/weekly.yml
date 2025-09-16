@@ -1,0 +1,20 @@
+name: Weekly Node Job
+on:
+  schedule:
+    - cron: "0 9 * * 1"   # Every Monday 09:00 UTC
+  workflow_dispatch:       # (optional) run by hand
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci        # or `npm i` / `pnpm i`
+      - run: node scripts/job.mjs
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}
