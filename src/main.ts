@@ -4,7 +4,7 @@ import { EventFilter } from './utils/eventFilter';
 import { EventCategorizer } from './utils/eventCategorizer';
 import { validateConfig, config } from './config/config';
 import { EventDeduplicator } from './utils/eventDeduplicator';
-import { RawEvent } from './types/events';
+import { RawEvent, ProcessedEvent } from './types/events';
 
 class EventsBot {
   private apifyService: ApifyService;
@@ -58,7 +58,7 @@ class EventsBot {
         const processedEvents = EventFilter.processEvents(next7DaysEvents);
         const categorizedEvents = await EventCategorizer.categorizeEvents(processedEvents);
         const deduplicatedEvents = EventDeduplicator.deduplicateEvents(categorizedEvents);
-        const sortedEvents = deduplicatedEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        const sortedEvents = deduplicatedEvents.sort((a: ProcessedEvent, b: ProcessedEvent) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         console.log(`🔄 Deduplicated from ${categorizedEvents.length} to ${deduplicatedEvents.length} events for ${cityName}`);
 
