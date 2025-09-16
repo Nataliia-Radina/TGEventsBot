@@ -13,7 +13,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci        # or `npm i` / `pnpm i`
-      - run: node ./dist/main.js
+      - run: node /dist/main.js
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
