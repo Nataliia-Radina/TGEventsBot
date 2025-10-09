@@ -39,7 +39,7 @@ exports.config = {
         "scrapeHostedByGroup": true,
         "scrapeMaxAttendees": true,
         "eventType": "",
-        "searchKeyword": "tech, software, ai, product, design, developer, javascript, php, python, ux, enterpreneurship, enterpreneur, startup",
+        "searchKeyword": "ai, artificial intelligence, machine learning, deep learning, neural networks, llm, llms, gpt, chatgpt, openai, data science, computer vision, nlp, generative ai, automation, robotics, ml, data, analytics, prompt engineering, ai tools, ai art, ai drawing, midjourney, stable diffusion, ai startup, ai product, ai development",
         "state": "PHYSICAL",
     },
     daysAhead: 7,

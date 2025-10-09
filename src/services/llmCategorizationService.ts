@@ -23,15 +23,15 @@ export class LLMCategorizationService {
         messages: [
           {
             role: 'system',
-            content: `You are an expert event categorizer for tech events. Categorize each event into exactly one of these categories:
+            content: `You are an expert event categorizer for AI-related events. Categorize each AI-related event into exactly one of these categories:
 
-            - AI: Artificial intelligence, machine learning, data science, LLMs, neural networks, AGI
-            - Product: Product management, product strategy, roadmaps, product owners
-            - Engineering: Software development, programming, frameworks, technical talks, coding, javascript, java, php, python, databases, infrastructure
-            - Business: Startups, entrepreneurship, indie hacking, funding, business strategy, marketing, sales, founders
-            - UX: User experience, user interface, design, prototyping, usability, graphics
-            - Lifestyle: food, sports, wellness, community gatherings, casual meetups, music
-            - Other: Everything else that doesn't fit the above categories
+            - AI: Core AI/ML topics - artificial intelligence, machine learning, deep learning, neural networks, LLMs, AGI, data science, computer vision, NLP, generative AI, AI research
+            - Product: AI product management, AI product strategy, AI product development, building AI products, AI product roadmaps, AI-powered products
+            - Engineering: AI/ML engineering, building AI systems, AI infrastructure, AI tools development, prompt engineering, AI model development, MLOps, AI software development
+            - Business: AI startups, AI entrepreneurship, AI business strategy, AI funding, AI market opportunities, AI business applications, AI consulting
+            - UX: AI UX design, designing for AI products, AI-assisted design, AI art, AI drawing tools, generative design, AI creative tools, human-AI interaction design
+            - Lifestyle: AI community events, AI networking, AI discussions, AI philosophy, AI ethics discussions, casual AI meetups
+            - Other: AI-related events that don't fit the above categories
 
             Respond with only the category name (AI, Product, Engineering, Business, UX, Lifestyle, or Other).`
           },
