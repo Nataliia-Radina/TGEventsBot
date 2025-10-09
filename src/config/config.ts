@@ -13,7 +13,7 @@ export const config = {
   apify: {
     token: process.env.APIFY_API_TOKEN,
     meetupActorId: process.env.MEETUP_ACTOR_ID || 'filip_cicvarek/meetup-scraper',
-    lumaActorId: process.env.LUMA_ACTOR_ID || 'lexis-solutions/lu-ma-scraper',
+    lumaActorId: process.env.LUMA_ACTOR_ID || 'apify/luma-scraper',
     timeout: 300000, // 5 minutes
   },
   telegram: {
@@ -35,7 +35,7 @@ export const config = {
     "scrapeHostedByGroup": true,
     "scrapeMaxAttendees": true,
     "eventType": "",
-    "searchKeyword": "ai, artificial intelligence, machine learning, deep learning, neural networks, llm, llms, gpt, chatgpt, openai, data science, computer vision, nlp, generative ai, automation, robotics, ml, data, analytics, prompt engineering, ai tools, ai art, ai drawing, midjourney, stable diffusion, ai startup, ai product, ai development",
+    "searchKeyword": "artificial intelligence, machine learning, AI, deep learning, neural networks, LLM, GPT, ChatGPT, OpenAI, generative AI, AI art, AI tools, AI startup, AI product, data science, computer vision, NLP, prompt engineering",
     "state": "PHYSICAL",
   },
   daysAhead: 7,

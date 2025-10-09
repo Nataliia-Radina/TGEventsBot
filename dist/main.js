@@ -29,7 +29,10 @@ class EventsBot {
                     this.apifyService.fetchMeetupEvents(cityName, country),
                     this.apifyService.fetchLumaEvents(cityName, country)
                 ]);
-                console.log(`📊 Fetched ${meetupEvents.length} Meetup events and ${lumaEvents.length} Luma events for ${cityName}`);
+                console.log(`📊 FINAL FETCH RESULTS for ${cityName}:`);
+                console.log(`   🔸 Meetup: ${meetupEvents.length} AI-related events`);
+                console.log(`   🔸 Luma: ${lumaEvents.length} AI-related events`);
+                console.log(`   🔸 Total: ${meetupEvents.length + lumaEvents.length} AI events from both sources`);
                 // Combine all events
                 const allEvents = [...meetupEvents, ...lumaEvents];
                 if (allEvents.length === 0) {
