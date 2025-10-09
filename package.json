@@ -1,7 +1,7 @@
 {
-  "name": "berlin-events-telegram-bot",
+  "name": "amsterdam-events-telegram-bot",
   "version": "1.0.0",
-  "description": "TypeScript app that parses Berlin events from Apify and posts them to Telegram",
+  "description": "TypeScript app that fetches Amsterdam tech events from Meetup and posts them to Telegram",
   "main": "dist/main.js",
   "private": true,
   "scripts": {

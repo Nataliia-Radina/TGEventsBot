@@ -7,6 +7,9 @@ export class TelegramService {
   private bot: TelegramBot;
 
   constructor() {
+    if (!config.telegram.botToken) {
+      throw new Error('TELEGRAM_BOT_TOKEN is required but not provided in environment variables');
+    }
     this.bot = new TelegramBot(config.telegram.botToken);
   }
 

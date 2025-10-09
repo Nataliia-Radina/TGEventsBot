@@ -6,6 +6,9 @@ export class LLMCategorizationService {
   private openai: OpenAI;
 
   constructor() {
+    if (!config.openai.apiKey) {
+      throw new Error('OPENAI_API_KEY is required but not provided in environment variables');
+    }
     this.openai = new OpenAI({
       apiKey: config.openai.apiKey,
     });

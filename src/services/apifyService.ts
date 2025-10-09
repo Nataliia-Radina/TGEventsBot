@@ -6,6 +6,9 @@ export class ApifyService {
   private client: ApifyClient;
 
   constructor() {
+    if (!config.apify.token) {
+      throw new Error('APIFY_API_TOKEN is required but not provided in environment variables');
+    }
     this.client = new ApifyClient({
       token: config.apify.token,
     });
