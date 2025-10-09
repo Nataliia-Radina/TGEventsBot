@@ -31,17 +31,18 @@ class EventsBot {
 
         console.log(`\n🚀 Processing ${cityName}, ${country}...`);
 
-        // Fetch events from multiple sources for this city
-        const [meetupEvents, lumaEvents] = await Promise.all([
-          this.apifyService.fetchMeetupEvents(cityName, country),
-          /*this.apifyService.fetchLumaEvents(cityName, country)*/ () => []
-        ]);
+        // Fetch events from Meetup
+        console.log(`🔍 Fetching events for ${cityName}, ${country}...`);
+        const meetupEvents = await this.apifyService.fetchMeetupEvents(cityName, country);
 
-        console.log(`📊 Fetched ${meetupEvents.length} Meetup events and ${lumaEvents.length} Luma events for ${cityName}`);
+        if (meetupEvents.length === 0) {
+          console.warn(`⚠️  No events fetched from Meetup for ${cityName}`);
+        } else {
+          console.log(`📊 Fetched ${meetupEvents.length} Meetup events for ${cityName}`);
+        }
 
-        // Combine all events
-        // @ts-ignore
-        const allEvents: RawEvent[] = [...meetupEvents/*, ...lumaEvents*/];
+        // Use meetup events as the primary source
+        const allEvents: RawEvent[] = [...meetupEvents];
 
         if (allEvents.length === 0) {
           console.log(`⚠️  No events fetched from sources for ${cityName}`);
@@ -69,7 +70,7 @@ class EventsBot {
 
         // Small delay between cities to avoid rate limits
         if (config.cities.indexOf(cityConfig) < config.cities.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise(resolve => setTimeout(resolve, config.delays.betweenCities));
         }
       }
     } catch (error) {

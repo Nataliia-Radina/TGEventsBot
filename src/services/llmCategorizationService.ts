@@ -16,7 +16,7 @@ export class LLMCategorizationService {
       const prompt = this.createPrompt(event);
 
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4.1-mini',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -37,8 +37,8 @@ export class LLMCategorizationService {
             content: prompt
           }
         ],
-        max_tokens: 10,
-        temperature: 0,
+        max_tokens: config.llm.maxTokens,
+        temperature: config.llm.temperature,
       });
 
       const category = response.choices[0]?.message?.content?.trim() as EventCategory;
@@ -70,8 +70,8 @@ export class LLMCategorizationService {
 
     if (event.description && event.description.length > 0) {
       // Truncate description to avoid token limits
-      const truncatedDescription = event.description.length > 500
-        ? event.description.substring(0, 500) + '...'
+      const truncatedDescription = event.description.length > config.llm.maxDescriptionLength
+        ? event.description.substring(0, config.llm.maxDescriptionLength) + '...'
         : event.description;
       parts.push(`Event Description: ${truncatedDescription}`);
     }
@@ -83,7 +83,7 @@ export class LLMCategorizationService {
     const categorizedEvents: ProcessedEvent[] = [];
 
     // Process events in small batches to avoid rate limits
-    const batchSize = 5;
+    const batchSize = config.llm.batchSize;
     for (let i = 0; i < events.length; i += batchSize) {
       const batch = events.slice(i, i + batchSize);
 
@@ -97,7 +97,7 @@ export class LLMCategorizationService {
 
       // Small delay between batches to respect rate limits
       if (i + batchSize < events.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, config.delays.betweenLlmBatches));
       }
     }
 

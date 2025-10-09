@@ -5,30 +5,19 @@ dotenv.config();
 export const config = {
   cities: [
     {
-      cityName: 'berlin',
-      country: 'germany',
-      chatId: '-1003082209974',
-    },
-    {
       cityName: 'amsterdam',
       country: 'netherlands',
-      chatId: '-1003062354872',
-    },
-    {
-      cityName: 'london',
-      country: 'uk',
-      chatId: '-1003072628330',
+      chatId: '-1003108266546',
     }
   ],
   apify: {
     token: process.env.APIFY_API_TOKEN,
     meetupActorId: process.env.MEETUP_ACTOR_ID || 'filip_cicvarek/meetup-scraper',
-    lumaActorId: process.env.LUMA_ACTOR_ID || 'lexis-solutions/lu-ma-scraper',
     timeout: 300000, // 5 minutes
   },
   telegram: {
-    botToken: process.env.TELEGRAM_BOT_TOKEN || '8207376858:AAHBogwGHZ3LGpdyBbw9WMZwzmTAyepJlg0',
-    chatId: process.env.TELEGRAM_CHAT_ID || '1',
+    botToken: process.env.TELEGRAM_BOT_TOKEN,
+    chatId: process.env.TELEGRAM_CHAT_ID,
   },
   openai: {
     apiKey: process.env.OPENAI_API_KEY,
@@ -50,6 +39,16 @@ export const config = {
   },
   daysAhead: 7,
   minAttendees: 5,
+  delays: {
+    betweenCities: 2000, // 2 seconds
+    betweenLlmBatches: 1000, // 1 second
+  },
+  llm: {
+    batchSize: 5,
+    maxTokens: 10,
+    temperature: 0,
+    maxDescriptionLength: 500,
+  },
   categories: {
     UX: ['ux', 'ui', 'user experience', 'user interface', 'design', 'designer', 'prototype', 'usability'],
     Product: ['product management', 'product manager', 'product owner', 'roadmap', 'strategy', 'product'],
@@ -61,18 +60,34 @@ export const config = {
 };
 
 export function validateConfig(): boolean {
-  const required = [
-    config.apify.token,
-    config.telegram.botToken,
-    config.openai.apiKey
+  const requiredEnvVars = [
+    { name: 'APIFY_API_TOKEN', value: config.apify.token },
+    { name: 'TELEGRAM_BOT_TOKEN', value: config.telegram.botToken },
+    { name: 'OPENAI_API_KEY', value: config.openai.apiKey }
   ];
 
-  const missing = required.filter(value => !value);
+  const missing = requiredEnvVars.filter(env => !env.value);
   
   if (missing.length > 0) {
-    console.error('Missing required environment variables. Please check .env file.');
+    console.error('❌ Missing required environment variables:');
+    missing.forEach(env => {
+      console.error(`   - ${env.name}`);
+    });
+    console.error('\nPlease create a .env file with the required variables.');
     return false;
   }
 
+  // Validate token formats
+  if (config.telegram.botToken && !config.telegram.botToken.match(/^\d+:[A-Za-z0-9_-]+$/)) {
+    console.error('❌ Invalid Telegram bot token format');
+    return false;
+  }
+
+  if (config.openai.apiKey && !config.openai.apiKey.startsWith('sk-')) {
+    console.error('❌ Invalid OpenAI API key format');
+    return false;
+  }
+
+  console.log('✅ Configuration validation passed');
   return true;
 }

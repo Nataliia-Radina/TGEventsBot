@@ -36,3 +36,28 @@ export interface ApifyRunOptions {
   input: Record<string, any>;
   timeout?: number;
 }
+
+export interface ApifyMeetupItem {
+  id?: string;
+  eventId?: string;
+  name?: string;
+  eventName?: string;
+  description?: string;
+  eventDescription?: string;
+  time?: string;
+  dateTime?: string;
+  date?: string;
+  venue?: {
+    address?: string;
+    city?: string;
+  };
+  location?: string;
+  address?: string;
+  link?: string;
+  url?: string;
+  eventUrl?: string;
+  actualAttendees?: number;
+  organizedByGroup?: string;
+  topics?: string[];
+  eventType?: string;
+}
