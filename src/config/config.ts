@@ -13,6 +13,7 @@ export const config = {
   apify: {
     token: process.env.APIFY_API_TOKEN,
     meetupActorId: process.env.MEETUP_ACTOR_ID || 'filip_cicvarek/meetup-scraper',
+    lumaActorId: process.env.LUMA_ACTOR_ID || 'lexis-solutions/lu-ma-scraper',
     timeout: 300000, // 5 minutes
   },
   telegram: {

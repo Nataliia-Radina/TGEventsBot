@@ -23,17 +23,15 @@ class EventsBot {
             for (const cityConfig of config_1.config.cities) {
                 const { cityName, country, chatId } = cityConfig;
                 console.log(`\n🚀 Processing ${cityName}, ${country}...`);
-                // Fetch events from Meetup
+                // Fetch events from multiple sources
                 console.log(`🔍 Fetching events for ${cityName}, ${country}...`);
-                const meetupEvents = await this.apifyService.fetchMeetupEvents(cityName, country);
-                if (meetupEvents.length === 0) {
-                    console.warn(`⚠️  No events fetched from Meetup for ${cityName}`);
-                }
-                else {
-                    console.log(`📊 Fetched ${meetupEvents.length} Meetup events for ${cityName}`);
-                }
-                // Use meetup events as the primary source
-                const allEvents = [...meetupEvents];
+                const [meetupEvents, lumaEvents] = await Promise.all([
+                    this.apifyService.fetchMeetupEvents(cityName, country),
+                    this.apifyService.fetchLumaEvents(cityName, country)
+                ]);
+                console.log(`📊 Fetched ${meetupEvents.length} Meetup events and ${lumaEvents.length} Luma events for ${cityName}`);
+                // Combine all events
+                const allEvents = [...meetupEvents, ...lumaEvents];
                 if (allEvents.length === 0) {
                     console.log(`⚠️  No events fetched from sources for ${cityName}`);
                     await this.telegramService.postEvents([], chatId, cityName);

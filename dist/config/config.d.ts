@@ -7,6 +7,7 @@ export declare const config: {
     apify: {
         token: string | undefined;
         meetupActorId: string;
+        lumaActorId: string;
         timeout: number;
     };
     telegram: {
