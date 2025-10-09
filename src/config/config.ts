@@ -77,9 +77,9 @@ export function validateConfig(): boolean {
     return false;
   }
 
-  // Validate token formats
-  if (config.telegram.botToken && !config.telegram.botToken.match(/^\d+:[A-Za-z0-9_-]+$/)) {
-    console.error('❌ Invalid Telegram bot token format');
+  // Validate token formats - Telegram bot tokens contain bot_id:token
+  if (config.telegram.botToken && !config.telegram.botToken.includes(':')) {
+    console.error('❌ Invalid Telegram bot token format. Expected format: <bot_id>:<token>');
     return false;
   }
 

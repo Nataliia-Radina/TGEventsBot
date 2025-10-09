@@ -1,0 +1,1 @@
+{"version":3,"file":"apifyService.d.ts","sourceRoot":"","sources":["../../src/services/apifyService.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,QAAQ,EAAoC,MAAM,iBAAiB,CAAC;AAE7E,qBAAa,YAAY;IACvB,OAAO,CAAC,MAAM,CAAc;;IAWtB,iBAAiB,CAAC,IAAI,EAAE,MAAM,EAAE,OAAO,EAAE,MAAM,GAAG,OAAO,CAAC,QAAQ,EAAE,CAAC;IA4C3E,OAAO,CAAC,oBAAoB;IAkB5B,OAAO,CAAC,UAAU;CAKnB"}

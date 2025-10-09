@@ -1,0 +1,93 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.config = void 0;
+exports.validateConfig = validateConfig;
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+exports.config = {
+    cities: [
+        {
+            cityName: 'amsterdam',
+            country: 'netherlands',
+            chatId: '-1003108266546',
+        }
+    ],
+    apify: {
+        token: process.env.APIFY_API_TOKEN,
+        meetupActorId: process.env.MEETUP_ACTOR_ID || 'filip_cicvarek/meetup-scraper',
+        timeout: 300000, // 5 minutes
+    },
+    telegram: {
+        botToken: process.env.TELEGRAM_BOT_TOKEN,
+        chatId: process.env.TELEGRAM_CHAT_ID,
+    },
+    openai: {
+        apiKey: process.env.OPENAI_API_KEY,
+    },
+    defaultFilters: {
+        "maxResults": 100,
+        "scrapeActualAttendeesCount": true,
+        "scrapeEventAddress": true,
+        "scrapeEventDate": true,
+        "scrapeEventDescription": true,
+        "scrapeEventName": true,
+        "scrapeEventType": true,
+        "scrapeEventUrl": true,
+        "scrapeHostedByGroup": true,
+        "scrapeMaxAttendees": true,
+        "eventType": "",
+        "searchKeyword": "tech, software, ai, product, design, developer, javascript, php, python, ux, enterpreneurship, enterpreneur, startup",
+        "state": "PHYSICAL",
+    },
+    daysAhead: 7,
+    minAttendees: 5,
+    delays: {
+        betweenCities: 2000, // 2 seconds
+        betweenLlmBatches: 1000, // 1 second
+    },
+    llm: {
+        batchSize: 5,
+        maxTokens: 10,
+        temperature: 0,
+        maxDescriptionLength: 500,
+    },
+    categories: {
+        UX: ['ux', 'ui', 'user experience', 'user interface', 'design', 'designer', 'prototype', 'usability'],
+        Product: ['product management', 'product manager', 'product owner', 'roadmap', 'strategy', 'product'],
+        AI: ['artificial intelligence', 'machine learning', 'deep learning', 'neural', 'llm', 'llms', 'data', 'gpt', 'chatgpt', 'ai', 'ais'],
+        Lifestyle: ['running', 'coffee', 'walk', 'walking', 'art', 'eat', 'lunch', 'dinner', 'swimming', 'swim', 'fitness', 'yoga', 'meditation', 'cooking', 'food', 'social', 'drinks', 'casual', 'community', 'outdoor', 'nature', 'wellness'],
+        Business: ['makers', 'builders', 'investors', 'investments', 'founder', 'founders', 'business', 'entrepreneur', 'startup', 'startups', 'venture', 'investment', 'funding', 'marketing', 'sales'],
+        Engineering: ['testing', 'engineering', 'software', 'developer', 'programming', 'code', 'backend', 'frontend', 'fullstack', 'tech', 'laravel', 'php', 'javascript', 'python', 'java', 'kotlin', 'typescript', 'react', 'nodejs', 'symfony', 'js', 'react'],
+    }
+};
+function validateConfig() {
+    const requiredEnvVars = [
+        { name: 'APIFY_API_TOKEN', value: exports.config.apify.token },
+        { name: 'TELEGRAM_BOT_TOKEN', value: exports.config.telegram.botToken },
+        { name: 'OPENAI_API_KEY', value: exports.config.openai.apiKey }
+    ];
+    const missing = requiredEnvVars.filter(env => !env.value);
+    if (missing.length > 0) {
+        console.error('❌ Missing required environment variables:');
+        missing.forEach(env => {
+            console.error(`   - ${env.name}`);
+        });
+        console.error('\nPlease create a .env file with the required variables.');
+        return false;
+    }
+    // Validate token formats - Telegram bot tokens contain bot_id:token
+    if (exports.config.telegram.botToken && !exports.config.telegram.botToken.includes(':')) {
+        console.error('❌ Invalid Telegram bot token format. Expected format: <bot_id>:<token>');
+        return false;
+    }
+    if (exports.config.openai.apiKey && !exports.config.openai.apiKey.startsWith('sk-')) {
+        console.error('❌ Invalid OpenAI API key format');
+        return false;
+    }
+    console.log('✅ Configuration validation passed');
+    return true;
+}
+//# sourceMappingURL=config.js.map
