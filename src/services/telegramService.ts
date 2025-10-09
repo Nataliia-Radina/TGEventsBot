@@ -19,18 +19,12 @@ export class TelegramService {
       return;
     }
 
-    const groupedEvents = EventCategorizer.groupByCategory(events);
-    const sortedCategories = EventCategorizer.getSortedCategories();
+    // Sort events by date
+    const sortedEvents = events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    // Create single message with header and all categories
+    // Create single message with header and all events
     let message = this.createHeaderMessage(events.length, cityName);
-
-    for (const category of sortedCategories) {
-      const categoryEvents = groupedEvents.get(category);
-      if (categoryEvents && categoryEvents.length > 0) {
-        message += this.createCategoryMessage(category, categoryEvents);
-      }
-    }
+    message += this.createCategoryMessage('Other', sortedEvents); // Using 'Other' as placeholder since we're not grouping by category
 
     await this.sendMessage(message, chatId);
   }
@@ -53,24 +47,13 @@ export class TelegramService {
   }
 
   private createCategoryMessage(category: EventCategory, events: ProcessedEvent[]): string {
-    const categoryEmojis = {
-      AI: '🤖',
-      Product: '📦',
-      Engineering: '⚡',
-      Business: '💼',
-      UX: '🎨',
-      Lifestyle: '🏃',
-      Other: '📌'
-    };
-
-    let message = `${categoryEmojis[category]} *${category.toUpperCase()}*\n`;
+    let message = '';
 
     events.forEach((event, index) => {
       const date = new Date(event.date);
       const dateStr = date.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric'
+        day: 'numeric',
+        month: 'short'
       });
       const timeStr = date.toLocaleTimeString('en-US', {
         hour: 'numeric',
@@ -79,10 +62,13 @@ export class TelegramService {
       });
 
       const cleanTitle = this.cleanEventTitle(event.title);
-      message += `${dateStr} ${timeStr} • [${this.escapeMarkdown(cleanTitle)}](${event.url})\n`;
+      
+      message += `📅 ${dateStr} — ${this.escapeMarkdown(cleanTitle)}\n`;
+      message += `⏰ ${timeStr} • 📝 ${this.escapeMarkdown(event.description ? event.description.substring(0, 100) + '...' : 'Event details')}\n`;
+      message += `📍 ${this.escapeMarkdown(event.location || event.city || 'Amsterdam')}\n`;
+      message += `🔗 ${event.url}\n\n`;
     });
 
-    message += '\n';
     return message;
   }
 
@@ -92,8 +78,10 @@ export class TelegramService {
         parse_mode: 'Markdown',
         disable_web_page_preview: true,
       });
+      console.log('✅ Message sent successfully to Telegram');
     } catch (error) {
-      console.error('Error sending Telegram message:', error);
+      console.error('❌ Failed to send Telegram message:', error);
+      throw error; // Re-throw to fail the job
     }
   }
 

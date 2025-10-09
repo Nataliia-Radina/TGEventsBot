@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TelegramService = void 0;
 const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
 const config_1 = require("../config/config");
-const eventCategorizer_1 = require("../utils/eventCategorizer");
 class TelegramService {
     constructor() {
         if (!config_1.config.telegram.botToken) {
@@ -19,16 +18,11 @@ class TelegramService {
             await this.sendMessage(`🔍 No ${cityName} events found for the next 7 days.`, chatId);
             return;
         }
-        const groupedEvents = eventCategorizer_1.EventCategorizer.groupByCategory(events);
-        const sortedCategories = eventCategorizer_1.EventCategorizer.getSortedCategories();
-        // Create single message with header and all categories
+        // Sort events by date
+        const sortedEvents = events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        // Create single message with header and all events
         let message = this.createHeaderMessage(events.length, cityName);
-        for (const category of sortedCategories) {
-            const categoryEvents = groupedEvents.get(category);
-            if (categoryEvents && categoryEvents.length > 0) {
-                message += this.createCategoryMessage(category, categoryEvents);
-            }
-        }
+        message += this.createCategoryMessage('Other', sortedEvents); // Using 'Other' as placeholder since we're not grouping by category
         await this.sendMessage(message, chatId);
     }
     createHeaderMessage(totalEvents, cityName) {
@@ -46,22 +40,12 @@ class TelegramService {
         return `🚀 *${cityName.charAt(0).toUpperCase() + cityName.slice(1)} Tech Events ${todayStr} - ${endStr}*\n\n`;
     }
     createCategoryMessage(category, events) {
-        const categoryEmojis = {
-            AI: '🤖',
-            Product: '📦',
-            Engineering: '⚡',
-            Business: '💼',
-            UX: '🎨',
-            Lifestyle: '🏃',
-            Other: '📌'
-        };
-        let message = `${categoryEmojis[category]} *${category.toUpperCase()}*\n`;
+        let message = '';
         events.forEach((event, index) => {
             const date = new Date(event.date);
             const dateStr = date.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric'
+                day: 'numeric',
+                month: 'short'
             });
             const timeStr = date.toLocaleTimeString('en-US', {
                 hour: 'numeric',
@@ -69,9 +53,11 @@ class TelegramService {
                 hour12: false
             });
             const cleanTitle = this.cleanEventTitle(event.title);
-            message += `${dateStr} ${timeStr} • [${this.escapeMarkdown(cleanTitle)}](${event.url})\n`;
+            message += `📅 ${dateStr} — ${this.escapeMarkdown(cleanTitle)}\n`;
+            message += `⏰ ${timeStr} • 📝 ${this.escapeMarkdown(event.description ? event.description.substring(0, 100) + '...' : 'Event details')}\n`;
+            message += `📍 ${this.escapeMarkdown(event.location || event.city || 'Amsterdam')}\n`;
+            message += `🔗 ${event.url}\n\n`;
         });
-        message += '\n';
         return message;
     }
     async sendMessage(text, chatId) {
@@ -80,9 +66,11 @@ class TelegramService {
                 parse_mode: 'Markdown',
                 disable_web_page_preview: true,
             });
+            console.log('✅ Message sent successfully to Telegram');
         }
         catch (error) {
-            console.error('Error sending Telegram message:', error);
+            console.error('❌ Failed to send Telegram message:', error);
+            throw error; // Re-throw to fail the job
         }
     }
     cleanEventTitle(title) {
