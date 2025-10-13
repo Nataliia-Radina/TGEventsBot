@@ -25,15 +25,21 @@ export class LLMCategorizationService {
             role: 'system',
             content: `You are an expert event categorizer for AI-related events. Categorize each AI-related event into exactly one of these categories:
 
-            - AI: Core AI/ML topics - artificial intelligence, machine learning, deep learning, neural networks, LLMs, AGI, data science, computer vision, NLP, generative AI, AI research
-            - Product: AI product management, AI product strategy, AI product development, building AI products, AI product roadmaps, AI-powered products
-            - Engineering: AI/ML engineering, building AI systems, AI infrastructure, AI tools development, prompt engineering, AI model development, MLOps, AI software development
+            - AI: Core AI/ML topics - artificial intelligence, machine learning, deep learning, neural networks, LLMs, AGI, data science, computer vision, NLP, generative AI, AI research, Model Context Protocol (MCP), AI security, AI safety, AI protocols
+            - Product: AI product management, AI product strategy, AI product development, building AI products, AI product roadmaps, AI-powered products  
+            - Engineering: AI/ML engineering, building AI systems, AI infrastructure, AI tools development, prompt engineering, AI model development, MLOps, AI software development, programming languages (PHP, Python, Java, Kafka, etc.)
             - Business: AI startups, AI entrepreneurship, AI business strategy, AI funding, AI market opportunities, AI business applications, AI consulting
             - UX: AI UX design, designing for AI products, AI-assisted design, AI art, AI drawing tools, generative design, AI creative tools, human-AI interaction design
             - Lifestyle: AI community events, AI networking, AI discussions, AI philosophy, AI ethics discussions, casual AI meetups
             - Other: AI-related events that don't fit the above categories
 
-            Respond with only the category name (AI, Product, Engineering, Business, UX, Lifestyle, or Other).`
+            IMPORTANT: Respond with ONLY the category name. Examples:
+            - For "AmsterdamPHP Monthly Meeting" → Engineering
+            - For "AI Hackday Amsterdam" → AI
+            - For "Apache Kafka x WarpStream" → Engineering
+            - For "Model Context Protocol Risks and Security Requirements" → AI
+            
+            Your response must be exactly one word: AI, Product, Engineering, Business, UX, Lifestyle, or Other.`
           },
           {
             role: 'user',
@@ -44,12 +50,35 @@ export class LLMCategorizationService {
         temperature: config.llm.temperature,
       });
 
-      const category = response.choices[0]?.message?.content?.trim() as EventCategory;
+      let category = response.choices[0]?.message?.content?.trim() || 'Other';
+      
+      console.log(`🤖 LLM Raw response for "${event.title}": "${category}"`);
+
+      // Clean up the response - extract just the category name
+      // Handle cases like "AI: Core AI/ML topics" -> "AI"
+      const categoryMatch = category.match(/^(AI|Product|Engineering|Business|UX|Lifestyle|Other)/i);
+      if (categoryMatch) {
+        category = categoryMatch[1];
+        console.log(`🤖 Extracted category: "${category}"`);
+      }
+
+      // Normalize case
+      category = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+      
+      // Special case for AI (should be uppercase)
+      if (category.toLowerCase() === 'ai') {
+        category = 'AI';
+      }
+      if (category.toLowerCase() === 'ux') {
+        category = 'UX';
+      }
+
+      console.log(`🤖 Final category for "${event.title}": "${category}"`);
 
       // Validate the response
       const validCategories: EventCategory[] = ['AI', 'Product', 'Engineering', 'Business', 'UX', 'Lifestyle', 'Other'];
-      if (validCategories.includes(category)) {
-        return category;
+      if (validCategories.includes(category as EventCategory)) {
+        return category as EventCategory;
       } else {
         console.warn(`Invalid category returned by LLM: ${category}. Defaulting to 'Other'.`);
         return 'Other';

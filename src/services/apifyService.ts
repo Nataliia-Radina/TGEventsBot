@@ -131,13 +131,15 @@ export class ApifyService {
   }
 
   private transformMeetupEvent(item: ApifyMeetupItem, city: string, country: string): RawEvent {
+    // Since venue data isn't available from the scraper, we'll leave location empty
+    // and handle it in the formatting layer
     return {
       id: item.id || item.eventId || Math.random().toString(),
       title: item.name || item.eventName || 'Untitled Event',
       description: item.description || item.eventDescription || '',
       date: item.time || item.dateTime || item.date || new Date().toISOString(),
-      location: item.venue?.address || item.location || item.address || '',
-      city: item.venue?.city || city,
+      location: '', // Venue data not available from current scraper
+      city: city,
       country: country,
       url: item.link || item.url || item.eventUrl || '',
       source: 'meetup',
@@ -149,8 +151,8 @@ export class ApifyService {
 
 
   private isAIRelated(event: RawEvent): boolean {
-    // More specific AI keywords - avoid generic terms like 'data' or 'analytics'
-    const strongAiKeywords = [
+    // Specific AI keywords (these can be substrings)
+    const aiKeywords = [
       'artificial intelligence', 'machine learning', 'deep learning', 
       'neural networks', 'llm', 'llms', 'gpt', 'chatgpt', 'openai', 
       'generative ai', 'computer vision', 'natural language processing',
@@ -159,19 +161,20 @@ export class ApifyService {
       'ai development', 'tensorflow', 'pytorch', 'hugging face',
       'transformers', 'bert', 'gpt-3', 'gpt-4', 'claude', 'anthropic',
       'ai ethics', 'agi', 'artificial general intelligence', 'ai native',
-      'ai-powered', 'ai-driven', 'ai workshop', 'ai meetup', 'ai conference'
+      'ai-powered', 'ai-driven', 'ai workshop', 'ai meetup', 'ai conference',
+      'ai hackathon', 'ai hackday', 'ai salon', 'ai community'
     ];
-
-    // Also check for standalone 'AI' but be more careful
-    const aiPattern = /\b(ai|ml)\b/i;
 
     const searchText = `${event.title} ${event.description} ${event.org}`.toLowerCase();
     
-    // Must match either a strong keyword or the AI pattern
-    const hasStrongKeyword = strongAiKeywords.some(keyword => searchText.includes(keyword));
-    const hasAiPattern = aiPattern.test(searchText);
+    // Check for specific keywords first
+    const hasKeyword = aiKeywords.some(keyword => searchText.includes(keyword));
     
-    const isAI = hasStrongKeyword || hasAiPattern;
+    // Check for standalone AI/ML with word boundaries (not within other words)
+    const standaloneAiPattern = /\b(ai|ml)\b/i;
+    const hasStandaloneAI = standaloneAiPattern.test(searchText);
+    
+    const isAI = hasKeyword || hasStandaloneAI;
     
     if (isAI) {
       console.log(`✅ AI Event: ${event.title}`);

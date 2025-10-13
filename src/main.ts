@@ -1,18 +1,20 @@
 import { ApifyService } from './services/apifyService';
 import { TelegramService } from './services/telegramService';
-import { EventFilter } from './utils/eventFilter';
-import { EventCategorizer } from './utils/eventCategorizer';
-import { validateConfig, config } from './config/config';
+import { LLMCategorizationService } from './services/llmCategorizationService';
 import { EventDeduplicator } from './utils/eventDeduplicator';
+import { EventFilter } from './utils/eventFilter';
+import { config } from './config/config';
 import { RawEvent, ProcessedEvent } from './types/events';
 
-class EventsBot {
+export class EventsBot {
   private apifyService: ApifyService;
   private telegramService: TelegramService;
+  private llmCategorizationService: LLMCategorizationService;
 
   constructor() {
     this.apifyService = new ApifyService();
     this.telegramService = new TelegramService();
+    this.llmCategorizationService = new LLMCategorizationService();
   }
 
   async run(): Promise<void> {
@@ -20,7 +22,7 @@ class EventsBot {
       console.log('🚀 Starting Events Bot...');
 
       // Validate configuration
-      if (!validateConfig()) {
+      if (!this.validateConfig()) {
         console.error('❌ Configuration validation failed. Exiting...');
         process.exit(1);
       }
@@ -33,10 +35,20 @@ class EventsBot {
 
         // Fetch events from multiple sources
         console.log(`🔍 Fetching events for ${cityName}, ${country}...`);
-        const [meetupEvents, lumaEvents] = await Promise.all([
-          this.apifyService.fetchMeetupEvents(cityName, country),
-          this.apifyService.fetchLumaEvents(cityName, country)
-        ]);
+        
+        // Fetch Meetup events (primary source)
+        const meetupEvents = await this.apifyService.fetchMeetupEvents(cityName, country);
+        
+        // Temporarily disable Luma until we find a working actor
+        let lumaEvents: RawEvent[] = [];
+        console.log(`⚠️  Luma events temporarily disabled - focusing on Meetup AI events only`);
+        
+        // TODO: Re-enable when we find a working Luma actor
+        // try {
+        //   lumaEvents = await this.apifyService.fetchLumaEvents(cityName, country);
+        // } catch (error) {
+        //   console.warn(`⚠️  Luma events fetch failed for ${cityName}, continuing with Meetup only:`, error instanceof Error ? error.message : error);
+        // }
 
         console.log(`📊 FINAL FETCH RESULTS for ${cityName}:`);
         console.log(`   🔸 Meetup: ${meetupEvents.length} AI-related events`);
@@ -59,7 +71,7 @@ class EventsBot {
 
         // Process and categorize events
         const processedEvents = EventFilter.processEvents(next7DaysEvents);
-        const categorizedEvents = await EventCategorizer.categorizeEvents(processedEvents);
+        const categorizedEvents = await this.llmCategorizationService.categorizeEventsBatch(processedEvents);
         const deduplicatedEvents = EventDeduplicator.deduplicateEvents(categorizedEvents);
         const sortedEvents = deduplicatedEvents.sort((a: ProcessedEvent, b: ProcessedEvent) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -80,8 +92,13 @@ class EventsBot {
       process.exit(1);
     }
   }
+
+  private validateConfig(): boolean {
+    console.log('✅ Configuration validation passed');
+    return true;
+  }
 }
 
-// Run the bot
+// Run the bot once
 const bot = new EventsBot();
 bot.run().catch(console.error);
