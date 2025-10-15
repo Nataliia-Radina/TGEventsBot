@@ -15,7 +15,7 @@ class TelegramService {
     }
     async postEvents(events, chatId, cityName) {
         if (events.length === 0) {
-            await this.sendMessage(`🔍 No ${cityName} AI events found for the next 7 days.`, chatId);
+            await this.sendMessage(`🔍 No ${cityName} AI events found for the next 14 days.`, chatId);
             return;
         }
         // Sort events by date
@@ -38,7 +38,7 @@ class TelegramService {
     createHeaderMessage(totalEvents, cityName) {
         const today = new Date();
         const endDate = new Date(today);
-        endDate.setDate(today.getDate() + 7);
+        endDate.setDate(today.getDate() + 14);
         const todayStr = today.toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric'
@@ -89,7 +89,6 @@ class TelegramService {
         const categoryEmoji = this.getCategoryEmoji(event.category);
         let eventText = `📅 ${dateStr} — ${this.escapeMarkdown(cleanTitle)}\n`;
         eventText += `⏰ ${timeStr} • ${categoryEmoji} ${event.category}\n`;
-        eventText += `📍 ${this.escapeMarkdown(event.location || event.city || 'Amsterdam')}\n`;
         eventText += `🔗 ${event.url}\n\n`;
         return eventText;
     }
@@ -130,7 +129,9 @@ class TelegramService {
         return title.replace(/\[[^\]]*\]/g, '').trim();
     }
     escapeMarkdown(text) {
-        return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&');
+        // Only escape characters that actually break Telegram Markdown
+        // Don't escape common punctuation like hyphens, dots, exclamation marks
+        return text.replace(/[_*[\]`]/g, '\\$&');
     }
     delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));

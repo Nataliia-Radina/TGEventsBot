@@ -8,7 +8,7 @@ export declare class TelegramService {
     private createContinuationHeader;
     private formatSingleEvent;
     private createCategoryMessage;
-    private sendMessage;
+    sendMessage(text: string, chatId: string): Promise<void>;
     private getCategoryEmoji;
     private cleanEventTitle;
     private escapeMarkdown;

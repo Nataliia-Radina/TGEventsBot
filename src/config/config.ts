@@ -7,7 +7,7 @@ export const config = {
     {
       cityName: 'amsterdam',
       country: 'netherlands',
-      chatId: '-1003108266546',
+      chatId: '-1003036770271',
     }
   ],
   apify: {

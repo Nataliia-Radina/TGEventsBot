@@ -1,0 +1,21 @@
+name: Daily AI Events Reminder
+on:
+  schedule:
+    - cron: "0 7 * * *"   # Every day at 07:00 UTC (9:00 Amsterdam time)
+  workflow_dispatch:       # (optional) run by hand
+jobs:
+  daily-reminder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - run: node ./dist/daily-reminder.js
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}

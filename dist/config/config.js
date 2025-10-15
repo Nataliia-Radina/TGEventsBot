@@ -12,13 +12,13 @@ exports.config = {
         {
             cityName: 'amsterdam',
             country: 'netherlands',
-            chatId: '-1003108266546',
+            chatId: '-1003036770271',
         }
     ],
     apify: {
         token: process.env.APIFY_API_TOKEN,
         meetupActorId: process.env.MEETUP_ACTOR_ID || 'filip_cicvarek/meetup-scraper',
-        lumaActorId: process.env.LUMA_ACTOR_ID || 'apify/luma-scraper',
+        lumaActorId: process.env.LUMA_ACTOR_ID || 'drobnikj/luma-scraper',
         timeout: 300000, // 5 minutes
     },
     telegram: {
@@ -43,7 +43,7 @@ exports.config = {
         "searchKeyword": "artificial intelligence, machine learning, AI, deep learning, neural networks, LLM, GPT, ChatGPT, OpenAI, generative AI, AI art, AI tools, AI startup, AI product, data science, computer vision, NLP, prompt engineering",
         "state": "PHYSICAL",
     },
-    daysAhead: 7,
+    daysAhead: 14,
     minAttendees: 5,
     delays: {
         betweenCities: 2000, // 2 seconds

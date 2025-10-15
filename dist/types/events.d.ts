@@ -42,6 +42,7 @@ export interface ApifyMeetupItem {
     dateTime?: string;
     date?: string;
     venue?: {
+        name?: string;
         address?: string;
         city?: string;
     };

@@ -7,6 +7,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/main.js",
+    "daily-reminder": "node dist/daily-reminder.js",
+    "test-daily": "node dist/test-daily-reminder.js",
     "dev": "tsx src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

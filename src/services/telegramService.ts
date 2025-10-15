@@ -119,7 +119,7 @@ export class TelegramService {
     return message;
   }
 
-  private async sendMessage(text: string, chatId: string): Promise<void> {
+  async sendMessage(text: string, chatId: string): Promise<void> {
     try {
       await this.bot.sendMessage(chatId, text, {
         parse_mode: 'Markdown',

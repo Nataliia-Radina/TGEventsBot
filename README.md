@@ -33,19 +33,14 @@ npm run build
 
 ## Usage
 
-### Run Once
+### Run Once (Full Event List)
 ```bash
 npm run start
 ```
 
-### Daily Scheduler (9:00 AM Amsterdam time)
+### Daily Reminder (Today's Events Only)
 ```bash
-npm run schedule
-```
-
-### Test Scheduler (runs every minute for testing)
-```bash
-npm run schedule:test
+npm run daily-reminder
 ```
 
 ### Development Mode
@@ -53,13 +48,18 @@ npm run schedule:test
 npm run dev
 ```
 
-## Scheduler Features
+## Automated Scheduling
 
-- **Daily execution** at 9:00 AM Amsterdam time
-- **Timezone aware** - automatically handles daylight saving time
-- **Error handling** - continues running even if individual runs fail
-- **Graceful shutdown** - Press Ctrl+C to stop
-- **Test mode** - Run every minute for testing
+### Weekly Full Event List
+- **GitHub Actions** runs every **Monday at 9:00 AM UTC**
+- Posts complete list of AI events for the upcoming week
+- Includes all categories with full event details
+
+### Daily Event Reminders  
+- **GitHub Actions** runs every **day at 7:00 AM UTC** (9:00 AM Amsterdam time)
+- Posts only events happening **today**
+- Quick morning reminder with event times and links
+- Shows "no events today" message when applicable
 
 ## Configuration
 
