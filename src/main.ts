@@ -60,7 +60,6 @@ export class EventsBot {
 
         if (allEvents.length === 0) {
           console.log(`⚠️  No events fetched from sources for ${cityName}`);
-          await this.telegramService.postEvents([], chatId, cityName);
           continue;
         }
 

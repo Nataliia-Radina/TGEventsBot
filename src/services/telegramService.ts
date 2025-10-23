@@ -15,7 +15,7 @@ export class TelegramService {
 
   async postEvents(events: ProcessedEvent[], chatId: string, cityName: string): Promise<void> {
     if (events.length === 0) {
-      await this.sendMessage(`🔍 No ${cityName} AI events found for the next 14 days.`, chatId);
+      // Skip sending message when no events found
       return;
     }
 

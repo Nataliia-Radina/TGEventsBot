@@ -15,7 +15,7 @@ class TelegramService {
     }
     async postEvents(events, chatId, cityName) {
         if (events.length === 0) {
-            await this.sendMessage(`🔍 No ${cityName} AI events found for the next 14 days.`, chatId);
+            // Skip sending message when no events found
             return;
         }
         // Sort events by date

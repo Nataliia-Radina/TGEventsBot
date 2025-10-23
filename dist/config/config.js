@@ -12,7 +12,7 @@ exports.config = {
         {
             cityName: 'amsterdam',
             country: 'netherlands',
-            chatId: '-1003036770271',
+            chatId: '-1003108266546',
         }
     ],
     apify: {

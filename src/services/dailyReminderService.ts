@@ -37,8 +37,7 @@ export class DailyReminderService {
         console.log(`📅 Found ${todaysEvents.length} events happening today in ${cityName}`);
 
         if (todaysEvents.length === 0) {
-          // Send a "no events today" message
-          await this.sendNoEventsMessage(cityName, chatId);
+          // Skip sending message when no events found
           continue;
         }
 
