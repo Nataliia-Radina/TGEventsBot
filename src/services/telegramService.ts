@@ -55,7 +55,7 @@ export class TelegramService {
       day: 'numeric'
     });
 
-    return `🤖 *${cityName.charAt(0).toUpperCase() + cityName.slice(1)} AI Events ${todayStr} - ${endStr}*\n\n`;
+    return `🤖 Events ${todayStr} - ${endStr}\n\n`;
   }
 
   private createMessageChunks(events: ProcessedEvent[], cityName: string): string[] {
@@ -86,7 +86,7 @@ export class TelegramService {
   }
 
   private createContinuationHeader(cityName: string): string {
-    return `🤖 *${cityName.charAt(0).toUpperCase() + cityName.slice(1)} AI Events (continued)*\n\n`;
+    return `🤖 Events (continued)\n\n`;
   }
 
   private formatSingleEvent(event: ProcessedEvent): string {
@@ -122,7 +122,6 @@ export class TelegramService {
   async sendMessage(text: string, chatId: string): Promise<void> {
     try {
       await this.bot.sendMessage(chatId, text, {
-        parse_mode: 'Markdown',
         disable_web_page_preview: true,
       });
       console.log('✅ Message sent successfully to Telegram');

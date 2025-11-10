@@ -46,11 +46,11 @@ export class ApifyService {
       const attendeeFilteredEvents = transformedEvents.filter((item: RawEvent) => item.attendees > config.minAttendees);
       console.log(`👥 Filtered to ${attendeeFilteredEvents.length} Meetup events with >${config.minAttendees} attendees for ${city}`);
 
-      console.log(`🤖 Starting AI filtering for Meetup events...`);
-      const aiFilteredEvents = attendeeFilteredEvents.filter((event: RawEvent) => this.isAIRelated(event));
+      console.log(`🤖 Starting tech filtering for Meetup events...`);
+      const techFilteredEvents = attendeeFilteredEvents.filter((event: RawEvent) => this.isTechRelated(event));
       
-      console.log(`📊 MEETUP RESULTS: ${items.length} raw → ${filteredItems.length} physical → ${attendeeFilteredEvents.length} with attendees → ${aiFilteredEvents.length} AI-related events for ${city}`);
-      return aiFilteredEvents;
+      console.log(`📊 MEETUP RESULTS: ${items.length} raw → ${filteredItems.length} physical → ${attendeeFilteredEvents.length} with attendees → ${techFilteredEvents.length} tech-related events for ${city}`);
+      return techFilteredEvents;
     } catch (error) {
       console.error(`❌ Error fetching Meetup events for ${city}, ${country}:`, error);
       if (error instanceof Error) {
@@ -99,11 +99,11 @@ export class ApifyService {
       const transformedEvents = items.map((item: any) => this.transformLumaEvent(item, city, country));
       console.log(`✅ Transformed ${transformedEvents.length} Luma events`);
 
-      console.log(`🤖 Starting AI filtering for Luma events...`);
-      const aiFilteredEvents = transformedEvents.filter((event: RawEvent) => this.isAIRelated(event));
+      console.log(`🤖 Starting tech filtering for Luma events...`);
+      const techFilteredEvents = transformedEvents.filter((event: RawEvent) => this.isTechRelated(event));
       
-      console.log(`📊 LUMA RESULTS: ${items.length} raw → ${transformedEvents.length} transformed → ${aiFilteredEvents.length} AI-related events for ${city}`);
-      return aiFilteredEvents;
+      console.log(`📊 LUMA RESULTS: ${items.length} raw → ${transformedEvents.length} transformed → ${techFilteredEvents.length} tech-related events for ${city}`);
+      return techFilteredEvents;
     } catch (error) {
       console.error(`❌ Error fetching Luma events for ${city}, ${country}:`, error);
       if (error instanceof Error) {
@@ -150,39 +150,71 @@ export class ApifyService {
   }
 
 
-  private isAIRelated(event: RawEvent): boolean {
-    // Specific AI keywords (these can be substrings)
-    const aiKeywords = [
+  private isTechRelated(event: RawEvent): boolean {
+    // Tech keywords - include AI/ML, programming, data, cloud, etc.
+    const techKeywords = [
+      // AI/ML keywords
       'artificial intelligence', 'machine learning', 'deep learning', 
       'neural networks', 'llm', 'llms', 'gpt', 'chatgpt', 'openai', 
       'generative ai', 'computer vision', 'natural language processing',
-      'prompt engineering', 'ai tools', 'ai art', 'ai drawing', 
-      'midjourney', 'stable diffusion', 'ai startup', 'ai product', 
-      'ai development', 'tensorflow', 'pytorch', 'hugging face',
+      'prompt engineering', 'ai tools', 'tensorflow', 'pytorch', 'hugging face',
       'transformers', 'bert', 'gpt-3', 'gpt-4', 'claude', 'anthropic',
-      'ai ethics', 'agi', 'artificial general intelligence', 'ai native',
-      'ai-powered', 'ai-driven', 'ai workshop', 'ai meetup', 'ai conference',
-      'ai hackathon', 'ai hackday', 'ai salon', 'ai community'
+      'ai ethics', 'agi', 'artificial general intelligence',
+      // Programming languages
+      'python', 'javascript', 'typescript', 'java', 'kotlin', 'rust', 'go', 'golang',
+      'c++', 'c#', 'php', 'ruby', 'swift', 'scala', 'r programming', 'sql',
+      // Data & Analytics
+      'databricks', 'data science', 'data analytics', 'analytics', 
+      'data engineering', 'mlops', 'ml ops', 'data pipeline', 'data platform',
+      'spark', 'apache spark', 'jupyter', 'pandas', 'numpy', 'scikit-learn',
+      'data visualization', 'big data', 'predictive analytics', 'statistical analysis',
+      'geospatial analytics', 'spatial analytics', 'data mining', 'dbt', 'data warehouse',
+      // Cloud & Infrastructure
+      'aws', 'azure', 'google cloud', 'gcp', 'kubernetes', 'docker', 'devops',
+      'cloud native', 'microservices', 'serverless', 'platform engineering',
+      // Development & Tools
+      'software development', 'web development', 'mobile development', 'frontend', 'backend',
+      'fullstack', 'api', 'rest api', 'graphql', 'react', 'vue', 'angular', 'nodejs',
+      'laravel', 'symfony', 'django', 'flask', 'spring', 'testing', 'qa',
+      'cybersecurity', 'security', 'blockchain', 'crypto', 'fintech',
+      // Tech concepts
+      'tech', 'technology', 'engineering', 'developer', 'programming', 'coding',
+      'startup', 'product management', 'ux', 'ui', 'design system'
+    ];
+
+    // Events to exclude (non-tech social/lifestyle events)
+    const excludeKeywords = [
+      'drinks only', 'social drinks', 'coffee meetup', 'networking drinks',
+      'running club', 'fitness', 'yoga', 'meditation', 'art meetup', 'drawing',
+      'painting', 'photography meetup', 'book club', 'language exchange',
+      'cooking', 'food meetup', 'wine tasting', 'beer tasting'
     ];
 
     const searchText = `${event.title} ${event.description} ${event.org}`.toLowerCase();
     
-    // Check for specific keywords first
-    const hasKeyword = aiKeywords.some(keyword => searchText.includes(keyword));
-    
-    // Check for standalone AI/ML with word boundaries (not within other words)
-    const standaloneAiPattern = /\b(ai|ml)\b/i;
-    const hasStandaloneAI = standaloneAiPattern.test(searchText);
-    
-    const isAI = hasKeyword || hasStandaloneAI;
-    
-    if (isAI) {
-      console.log(`✅ AI Event: ${event.title}`);
-    } else {
-      console.log(`❌ Non-AI Event filtered out: ${event.title}`);
+    // First check if it should be excluded
+    const shouldExclude = excludeKeywords.some(keyword => searchText.includes(keyword));
+    if (shouldExclude) {
+      console.log(`❌ Non-tech Event filtered out: ${event.title}`);
+      return false;
     }
     
-    return isAI;
+    // Check for tech keywords
+    const hasTechKeyword = techKeywords.some(keyword => searchText.includes(keyword));
+    
+    // Check for standalone tech terms with word boundaries
+    const standaloneTechPattern = /\b(ai|ml|tech|dev|api|ux|ui)\b/i;
+    const hasStandaloneTech = standaloneTechPattern.test(searchText);
+    
+    const isTech = hasTechKeyword || hasStandaloneTech;
+    
+    if (isTech) {
+      console.log(`✅ Tech Event: ${event.title}`);
+    } else {
+      console.log(`❌ Non-tech Event filtered out: ${event.title}`);
+    }
+    
+    return isTech;
   }
 
   private getEndDate(): Date {

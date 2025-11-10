@@ -41,7 +41,7 @@ export const config = {
   daysAhead: 14,
   minAttendees: 5,
   delays: {
-    betweenCities: 2000, // 2 seconds
+    betweenCity: 2000, // 2 seconds
     betweenLlmBatches: 1000, // 1 second
   },
   llm: {
@@ -54,7 +54,7 @@ export const config = {
     UX: ['ux', 'ui', 'user experience', 'user interface', 'design', 'designer', 'prototype', 'usability'],
     Product: ['product management', 'product manager', 'product owner', 'roadmap', 'strategy', 'product'],
     AI: ['artificial intelligence', 'machine learning', 'deep learning', 'neural', 'llm', 'llms', 'data', 'gpt', 'chatgpt', 'ai', 'ais'],
-    Lifestyle: ['running', 'coffee', 'walk', 'walking', 'art', 'eat', 'lunch', 'dinner', 'swimming', 'swim', 'fitness', 'yoga', 'meditation', 'cooking', 'food', 'social', 'drinks', 'casual', 'community', 'outdoor', 'nature', 'wellness'],
+    Lifestyle: ['running', 'coffee', 'walk', ' walking', 'art', 'eat', 'lunch', 'dinner', 'swimming', 'swim', 'fitness', 'yoga', 'meditation', 'cooking', 'food', 'social', 'drinks', 'casual', 'community', 'outdoor', 'nature', 'wellness'],
     Business: ['makers', 'builders', 'investors', 'investments', 'founder', 'founders', 'business', 'entrepreneur', 'startup', 'startups', 'venture', 'investment', 'funding', 'marketing', 'sales'],
     Engineering: ['testing', 'engineering', 'software', 'developer', 'programming', 'code', 'backend', 'frontend', 'fullstack', 'tech', 'laravel', 'php', 'javascript', 'python', 'java', 'kotlin', 'typescript', 'react', 'nodejs', 'symfony', 'js','react'],
   }
@@ -80,7 +80,7 @@ export function validateConfig(): boolean {
 
   // Validate token formats - Telegram bot tokens contain bot_id:token
   if (config.telegram.botToken && !config.telegram.botToken.includes(':')) {
-    console.error('❌ Invalid Telegram bot token format. Expected format: <bot_id>:<token>');
+    console.error('❌ Invalid Telegram bot token format. Expected format: <bot_id>:<token>')
     return false;
   }
 

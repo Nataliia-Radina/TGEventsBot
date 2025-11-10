@@ -83,7 +83,7 @@ export class EventsBot {
 
         // Small delay between cities to avoid rate limits
         if (config.cities.indexOf(cityConfig) < config.cities.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, config.delays.betweenCities));
+          await new Promise(resolve => setTimeout(resolve, config.delays.betweenCity));
         }
       }
     } catch (error) {

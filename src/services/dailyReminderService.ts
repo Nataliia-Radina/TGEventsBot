@@ -105,8 +105,7 @@ Check back tomorrow for more events! 🚀`;
       day: 'numeric' 
     });
 
-    let message = `🎯 **${events.length} AI event${events.length > 1 ? 's' : ''} happening TODAY** - ${dayName}, ${dateStr}:
-
+    let message = `🎯 ${events.length} event${events.length > 1 ? 's' : ''} happening TODAY - ${dayName}, ${dateStr}:
 `;
 
     events.forEach(event => {
@@ -119,11 +118,10 @@ Check back tomorrow for more events! 🚀`;
       const categoryEmoji = this.getCategoryEmoji(event.category);
       const cleanTitle = this.cleanEventTitle(event.title);
       
-      message += `⏰ **${eventTime}** - ${this.escapeMarkdown(cleanTitle)}\n`;
-      message += `${categoryEmoji} ${event.category} • [Join Event](${event.url})\n\n`;
+    message += `⏰ ${eventTime} - ${cleanTitle}\n`;
+    message += `${categoryEmoji} ${event.category} • ${event.url}\n\n`;
     });
 
-    message += `Have a great day building the future! 🚀🤖`;
 
     await this.telegramService.sendMessage(message, chatId);
   }
@@ -145,7 +143,4 @@ Check back tomorrow for more events! 🚀`;
     return title.replace(/\[[^\]]*\]/g, '').trim();
   }
 
-  private escapeMarkdown(text: string): string {
-    return text.replace(/[_*[\]`]/g, '\\$&');
-  }
 }
