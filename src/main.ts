@@ -1,5 +1,6 @@
 import { ApifyService } from './services/apifyService';
 import { TelegramService } from './services/telegramService';
+import { LinkedInService } from './services/linkedinService';
 import { LLMCategorizationService } from './services/llmCategorizationService';
 import { EventDeduplicator } from './utils/eventDeduplicator';
 import { EventFilter } from './utils/eventFilter';
@@ -9,11 +10,22 @@ import { RawEvent, ProcessedEvent } from './types/events';
 export class EventsBot {
   private apifyService: ApifyService;
   private telegramService: TelegramService;
+  private linkedinService: LinkedInService | null;
   private llmCategorizationService: LLMCategorizationService;
 
   constructor() {
     this.apifyService = new ApifyService();
     this.telegramService = new TelegramService();
+    
+    // Initialize LinkedIn service if credentials are available
+    try {
+      this.linkedinService = new LinkedInService();
+      console.log('✅ LinkedIn service initialized');
+    } catch (error) {
+      this.linkedinService = null;
+      console.log('⚠️  LinkedIn service disabled:', error instanceof Error ? error.message : error);
+    }
+    
     this.llmCategorizationService = new LLMCategorizationService();
   }
 
@@ -78,8 +90,19 @@ export class EventsBot {
 
         // Post to Telegram
         await this.telegramService.postEvents(sortedEvents, chatId, cityName);
-
         console.log(`✅ Successfully posted ${cityName} events to Telegram`);
+
+        // LinkedIn posting disabled - Marketing Developer Platform access denied
+        // if (this.linkedinService) {
+        //   try {
+        //     await this.linkedinService.postEvents(sortedEvents, cityName);
+        //     console.log(`✅ Successfully posted ${cityName} events to LinkedIn`);
+        //   } catch (error) {
+        //     console.error(`❌ Failed to post ${cityName} events to LinkedIn:`, error);
+        //     // Don't fail the entire job if LinkedIn posting fails
+        //   }
+        // }
+        console.log('⚠️  LinkedIn posting disabled - no Marketing Developer Platform access');
 
         // Small delay between cities to avoid rate limits
         if (config.cities.indexOf(cityConfig) < config.cities.length - 1) {

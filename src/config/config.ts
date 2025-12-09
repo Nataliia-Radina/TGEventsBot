@@ -23,6 +23,11 @@ export const config = {
   openai: {
     apiKey: process.env.OPENAI_API_KEY,
   },
+  linkedin: {
+    accessToken: process.env.LINKEDIN_ACCESS_TOKEN,
+    authorUrn: process.env.LINKEDIN_AUTHOR_URN,
+    apiVersion: process.env.LINKEDIN_API_VERSION || '202412',
+  },
   defaultFilters: {
     "maxResults": 100,
     "scrapeActualAttendeesCount": true,
