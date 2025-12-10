@@ -1,6 +1,7 @@
 import { ApifyClient } from 'apify-client';
 import { config } from '../config/config';
 import { RawEvent, ApifyRunOptions, ApifyMeetupItem } from '../types/events';
+import { DateUtils } from '../utils/dateUtils';
 
 export class ApifyService {
   private client: ApifyClient;
@@ -68,12 +69,10 @@ export class ApifyService {
     const runOptions: ApifyRunOptions = {
       actorId: config.apify.lumaActorId,
       input: {
-        location: city.charAt(0).toUpperCase() + city.slice(1),
-        maxResults: 50,
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: this.getEndDate().toISOString().split('T')[0],
+        maxItems: 50,
+        startAt: new Date().toISOString().split('T')[0],
         // Try different input format for Luma
-        query: "AI artificial intelligence machine learning"
+        query: `${city}, ${country}, AI, tech`
       },
       timeout: config.apify.timeout,
     };
@@ -160,6 +159,8 @@ export class ApifyService {
       'prompt engineering', 'ai tools', 'tensorflow', 'pytorch', 'hugging face',
       'transformers', 'bert', 'gpt-3', 'gpt-4', 'claude', 'anthropic',
       'ai ethics', 'agi', 'artificial general intelligence',
+      // Search & AI specific
+      'agentic', 'search engines', 'reasoning', 'profitability ai', 'ai',
       // Programming languages
       'python', 'javascript', 'typescript', 'java', 'kotlin', 'rust', 'go', 'golang',
       'c++', 'c#', 'php', 'ruby', 'swift', 'scala', 'r programming', 'sql',
@@ -177,36 +178,37 @@ export class ApifyService {
       'fullstack', 'api', 'rest api', 'graphql', 'react', 'vue', 'angular', 'nodejs',
       'laravel', 'symfony', 'django', 'flask', 'spring', 'testing', 'qa',
       'cybersecurity', 'security', 'blockchain', 'crypto', 'fintech',
-      // Tech concepts
-      'tech', 'technology', 'engineering', 'developer', 'programming', 'coding',
-      'startup', 'product management', 'ux', 'ui', 'design system'
+      // Tech concepts (essential generic terms)
+      'tech', 'technology', 'engineering', 'software engineering', 'developer', 'programming', 'coding',
+      'startup', 'tech startup', 'product management', 'ux', 'ui', 'ux design', 'ui design', 'design system',
+      // Specific event types
+      'coding club', 'tech networking'
     ];
 
     // Events to exclude (non-tech social/lifestyle events)
     const excludeKeywords = [
-      'drinks only', 'social drinks', 'coffee meetup', 'networking drinks',
+      'drinks only', 'social drinks', 'coffee meetup',
       'running club', 'fitness', 'yoga', 'meditation', 'art meetup', 'drawing',
       'painting', 'photography meetup', 'book club', 'language exchange',
-      'cooking', 'food meetup', 'wine tasting', 'beer tasting'
+      'cooking', 'food meetup', 'wine tasting', 'beer tasting',
+      // Add specific exclusions for events you don't want
+      'japanese language', 'language club', 'storytelling', 'public speaking',
+      'mapathon', 'missing maps', 'vibe check', 'reflect', 'reset',
+      'socrates cafe', 'philosophy', 'mindfulness', 'personal development',
+      'life coaching', 'wellness', 'spiritual', 'self-help',
+      'light festival', 'festival walk', 'walking tour', 'sightseeing'
     ];
 
     const searchText = `${event.title} ${event.description} ${event.org}`.toLowerCase();
-    
-    // First check if it should be excluded
-    const shouldExclude = excludeKeywords.some(keyword => searchText.includes(keyword));
-    if (shouldExclude) {
-      console.log(`❌ Non-tech Event filtered out: ${event.title}`);
+
+    // Check for excluded keywords first
+    const hasExcludedKeyword = excludeKeywords.some(keyword => searchText.includes(keyword));
+    if (hasExcludedKeyword) {
       return false;
     }
-    
+
     // Check for tech keywords
-    const hasTechKeyword = techKeywords.some(keyword => searchText.includes(keyword));
-    
-    // Check for standalone tech terms with word boundaries
-    const standaloneTechPattern = /\b(ai|ml|tech|dev|api|ux|ui)\b/i;
-    const hasStandaloneTech = standaloneTechPattern.test(searchText);
-    
-    const isTech = hasTechKeyword || hasStandaloneTech;
+    const isTech = techKeywords.some(keyword => searchText.includes(keyword));
     
     if (isTech) {
       console.log(`✅ Tech Event: ${event.title}`);

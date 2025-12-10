@@ -3,6 +3,7 @@ import { TelegramService } from './telegramService';
 import { LLMCategorizationService } from './llmCategorizationService';
 import { EventDeduplicator } from '../utils/eventDeduplicator';
 import { EventFilter } from '../utils/eventFilter';
+import { DateUtils } from '../utils/dateUtils';
 import { config } from '../config/config';
 import { RawEvent, ProcessedEvent } from '../types/events';
 
@@ -66,12 +67,10 @@ export class DailyReminderService {
   }
 
   private filterTodaysEvents(events: RawEvent[]): RawEvent[] {
-    const today = new Date();
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+    const { start: todayStart, end: todayEnd } = DateUtils.getTodayRangeInAmsterdam();
 
     return events.filter(event => {
-      const eventDate = new Date(event.date);
+      const eventDate = DateUtils.toAmsterdamTime(event.date);
       return eventDate >= todayStart && eventDate < todayEnd;
     });
   }

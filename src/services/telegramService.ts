@@ -44,7 +44,7 @@ export class TelegramService {
   private createHeaderMessage(totalEvents: number, cityName: string): string {
     const today = new Date();
     const endDate = new Date(today);
-    endDate.setDate(today.getDate() + 14);
+    endDate.setDate(today.getDate() + 7);
 
     const todayStr = today.toLocaleDateString('en-US', {
       month: 'short',

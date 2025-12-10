@@ -51,11 +51,11 @@ export class EventsBot {
         // Fetch Meetup events (primary source)
         const meetupEvents = await this.apifyService.fetchMeetupEvents(cityName, country);
         
-        // Temporarily disable Luma until we find a working actor
+        // Luma scraper disabled - focus on reliable Meetup events
         let lumaEvents: RawEvent[] = [];
-        console.log(`⚠️  Luma events temporarily disabled - focusing on Meetup AI events only`);
+        console.log(`⚠️  Luma scraper disabled - focusing on Meetup events only`);
         
-        // TODO: Re-enable when we find a working Luma actor
+        // TODO: Re-enable when we find a reliable Luma scraper with proper city filtering
         // try {
         //   lumaEvents = await this.apifyService.fetchLumaEvents(cityName, country);
         // } catch (error) {
@@ -63,9 +63,9 @@ export class EventsBot {
         // }
 
         console.log(`📊 FINAL FETCH RESULTS for ${cityName}:`);
-        console.log(`   🔸 Meetup: ${meetupEvents.length} AI-related events`);
-        console.log(`   🔸 Luma: ${lumaEvents.length} AI-related events`);
-        console.log(`   🔸 Total: ${meetupEvents.length + lumaEvents.length} AI events from both sources`);
+        console.log(`   🔸 Meetup: ${meetupEvents.length} tech-related events`);
+        console.log(`   🔸 Luma: ${lumaEvents.length} tech-related events`);
+        console.log(`   🔸 Total: ${meetupEvents.length + lumaEvents.length} tech events from both sources`);
 
         // Combine all events
         const allEvents: RawEvent[] = [...meetupEvents, ...lumaEvents];
@@ -76,12 +76,12 @@ export class EventsBot {
         }
 
         // Filter events
-        const next7DaysEvents = EventFilter.filterNext7Days(allEvents);
+        const nextWeekEvents = EventFilter.filterNextWeek(allEvents);
 
-        console.log(`🔍 Filtered to ${next7DaysEvents.length} ${cityName} events for next 7 days`);
+        console.log(`🔍 Filtered to ${nextWeekEvents.length} ${cityName} events for next week`);
 
         // Process and categorize events
-        const processedEvents = EventFilter.processEvents(next7DaysEvents);
+        const processedEvents = EventFilter.processEvents(nextWeekEvents);
         const categorizedEvents = await this.llmCategorizationService.categorizeEventsBatch(processedEvents);
         const deduplicatedEvents = EventDeduplicator.deduplicateEvents(categorizedEvents);
         const sortedEvents = deduplicatedEvents.sort((a: ProcessedEvent, b: ProcessedEvent) => new Date(a.date).getTime() - new Date(b.date).getTime());
