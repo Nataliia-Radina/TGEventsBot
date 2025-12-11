@@ -69,9 +69,6 @@ export class ApifyService {
     const runOptions: ApifyRunOptions = {
       actorId: config.apify.lumaActorId,
       input: {
-        maxItems: 50,
-        startAt: new Date().toISOString().split('T')[0],
-        // Try different input format for Luma
         query: `${city}, ${country}, AI, tech`
       },
       timeout: config.apify.timeout,
@@ -220,8 +217,6 @@ export class ApifyService {
   }
 
   private getEndDate(): Date {
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + config.daysAhead);
-    return endDate;
+    return DateUtils.addDaysInAmsterdam(config.daysAhead);
   }
 }

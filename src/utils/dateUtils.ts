@@ -8,15 +8,41 @@ export class DateUtils {
    * Get current date/time in Amsterdam timezone
    */
   static nowInAmsterdam(): Date {
-    return new Date(new Date().toLocaleString('en-US', { timeZone: DateUtils.AMSTERDAM_TIMEZONE }));
+    const now = new Date();
+    // Simply return the current date - we'll handle timezone in formatting
+    return now;
   }
 
   /**
    * Convert a date string to Amsterdam timezone
    */
   static toAmsterdamTime(dateStr: string): Date {
-    const date = new Date(dateStr);
-    return new Date(date.toLocaleString('en-US', { timeZone: DateUtils.AMSTERDAM_TIMEZONE }));
+    // Return the original date - events are already in correct timezone
+    return new Date(dateStr);
+  }
+
+  /**
+   * Get current date in Amsterdam timezone as a formatted string
+   */
+  static getCurrentAmsterdamDateString(): string {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: DateUtils.AMSTERDAM_TIMEZONE,
+      year: 'numeric',
+      month: '2-digit', 
+      day: '2-digit'
+    }).format(new Date());
+  }
+
+  /**
+   * Get date string for a given date in Amsterdam timezone
+   */
+  static getAmsterdamDateString(date: Date): string {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: DateUtils.AMSTERDAM_TIMEZONE,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(date);
   }
 
   /**

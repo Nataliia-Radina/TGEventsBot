@@ -67,12 +67,27 @@ export class DailyReminderService {
   }
 
   private filterTodaysEvents(events: RawEvent[]): RawEvent[] {
-    const { start: todayStart, end: todayEnd } = DateUtils.getTodayRangeInAmsterdam();
-
-    return events.filter(event => {
-      const eventDate = DateUtils.toAmsterdamTime(event.date);
-      return eventDate >= todayStart && eventDate < todayEnd;
+    const todayDateString = DateUtils.getCurrentAmsterdamDateString();
+    
+    console.log(`🕐 DEBUG: Today in Amsterdam: ${todayDateString}`);
+    
+    const filteredEvents = events.filter(event => {
+      const eventDate = new Date(event.date);
+      const eventDateString = DateUtils.getAmsterdamDateString(eventDate);
+      const isToday = eventDateString === todayDateString;
+      
+      if (events.indexOf(event) < 3) { // Debug first 3 events
+        console.log(`🕐 DEBUG Event "${event.title}":`);
+        console.log(`   Original: ${event.date}`);
+        console.log(`   Event date (Amsterdam): ${eventDateString}`);
+        console.log(`   Is today: ${isToday}`);
+      }
+      
+      return isToday;
     });
+    
+    console.log(`🕐 DEBUG: Filtered ${filteredEvents.length} events for today`);
+    return filteredEvents;
   }
 
   private async sendNoEventsMessage(cityName: string, chatId: string): Promise<void> {
