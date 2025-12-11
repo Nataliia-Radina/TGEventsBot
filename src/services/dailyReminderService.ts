@@ -67,20 +67,22 @@ export class DailyReminderService {
   }
 
   private filterTodaysEvents(events: RawEvent[]): RawEvent[] {
-    const { start: todayStart, end: todayEnd } = DateUtils.getTodayRangeInAmsterdam();
-
-    return events.filter(event => {
-      const eventDate = DateUtils.toAmsterdamTime(event.date);
-      return eventDate >= todayStart && eventDate < todayEnd;
+    const todayDateString = DateUtils.getCurrentAmsterdamDateString();
+    const filteredEvents = events.filter(event => {
+      const eventDate = new Date(event.date);
+      const eventDateString = DateUtils.getAmsterdamDateString(eventDate);
+      return eventDateString === todayDateString;
     });
+    return filteredEvents;
   }
 
   private async sendNoEventsMessage(cityName: string, chatId: string): Promise<void> {
     const today = new Date();
-    const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+    const dayName = today.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Europe/Amsterdam' });
     const dateStr = today.toLocaleDateString('en-US', { 
       month: 'short', 
-      day: 'numeric' 
+      day: 'numeric',
+      timeZone: 'Europe/Amsterdam'
     });
 
     const message = `📅 **${dayName}, ${dateStr}** - No AI events scheduled for today.
@@ -98,10 +100,14 @@ Check back tomorrow for more events! 🚀`;
 
   private async sendTodaysEventsMessage(events: ProcessedEvent[], cityName: string, chatId: string): Promise<void> {
     const today = new Date();
-    const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+    const dayName = today.toLocaleDateString('en-US', { 
+      weekday: 'long',
+      timeZone: 'Europe/Amsterdam'
+    });
     const dateStr = today.toLocaleDateString('en-US', { 
       month: 'short', 
-      day: 'numeric' 
+      day: 'numeric',
+      timeZone: 'Europe/Amsterdam'
     });
 
     let message = `🎯 ${events.length} event${events.length > 1 ? 's' : ''} happening TODAY - ${dayName}, ${dateStr}:
@@ -111,7 +117,8 @@ Check back tomorrow for more events! 🚀`;
       const eventTime = new Date(event.date).toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: false
+        hour12: false,
+        timeZone: 'Europe/Amsterdam'
       });
       
       const categoryEmoji = this.getCategoryEmoji(event.category);

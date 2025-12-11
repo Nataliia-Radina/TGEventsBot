@@ -69,9 +69,6 @@ export class ApifyService {
     const runOptions: ApifyRunOptions = {
       actorId: config.apify.lumaActorId,
       input: {
-        maxItems: 50,
-        startAt: new Date().toISOString().split('T')[0],
-        // Try different input format for Luma
         query: `${city}, ${country}, AI, tech`
       },
       timeout: config.apify.timeout,
@@ -196,7 +193,23 @@ export class ApifyService {
       'mapathon', 'missing maps', 'vibe check', 'reflect', 'reset',
       'socrates cafe', 'philosophy', 'mindfulness', 'personal development',
       'life coaching', 'wellness', 'spiritual', 'self-help',
-      'light festival', 'festival walk', 'walking tour', 'sightseeing'
+      'light festival', 'festival walk', 'walking tour', 'sightseeing',
+      // Cultural and historical events
+      'biography', 'jewish amsterdam', 'mokum', 'culture group', 'cultural tour',
+      'historical tour', 'museum tour', 'art tour', 'architecture tour',
+      // Sports and physical activities
+      'bouldering', 'climbing', 'volleyball', 'sports', 'football', 'soccer',
+      'basketball', 'tennis', 'badminton', 'swimming', 'cycling', 'hiking',
+      // Gaming and entertainment (non-tech)
+      'dungeons and dragons', 'd&d', 'board games', 'card games', 'roleplay',
+      'blood on the clocktower', 'custom script', 'tabletop',
+      // Psychology and support groups
+      'psychology talks', 'adhd meetup', 'support group', 'mental health',
+      'therapy', 'counseling', 'being alone', 'time together',
+      // Writing and creative (non-tech)
+      'shut up & write', 'shutupandwrite', 'creative writing', 'poetry', 'writing workshop',
+      // General socializing
+      'global socializing', 'social meetup', 'hangout', 'goodbye 2025'
     ];
 
     const searchText = `${event.title} ${event.description} ${event.org}`.toLowerCase();
@@ -220,8 +233,6 @@ export class ApifyService {
   }
 
   private getEndDate(): Date {
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + config.daysAhead);
-    return endDate;
+    return DateUtils.addDaysInAmsterdam(config.daysAhead);
   }
 }
